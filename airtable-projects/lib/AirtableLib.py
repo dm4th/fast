@@ -19,7 +19,7 @@ class AirtableData:
         return pd.DataFrame(record['fields'], index=[0])
     
     def get_data_by_field(self, field: str, value: str) -> pd.DataFrame:
-        records = self.airtable.search(field, value, typecast=True)
+        records = self.airtable.search(field, value)
         ids = [record['id'] for record in records]
         data = [record['fields'] for record in records]
         if len(data) == 0:
