@@ -28,7 +28,6 @@ def DrawGraphFromString(directed_string: str, format: str = 'png', size: str = '
                 node2, label = node2.split('[')
                 label = label.split(']')[0]
                 label = label.split('=')[1]
-                print(label)
             edges.append((node1, node2, label))
 
     for edge in edges:
