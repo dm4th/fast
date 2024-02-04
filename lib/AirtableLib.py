@@ -18,8 +18,12 @@ class AirtableData:
         record = self.airtable.get(id)
         return pd.DataFrame(record['fields'], index=[0])
     
-    def get_data_by_field(self, field: str, value: str) -> pd.DataFrame:
-        records = self.airtable.search(field, value)
+    def get_data_by_field(self, field: str, value: str, date_type: str='None') -> pd.DataFrame:
+        if date_type == 'date':
+            filter_formula = f"IS_SAME({field}, '{value}', 'day')"
+            records = self.airtable.get_all(formula=filter_formula)
+        else:
+            records = self.airtable.search(field, value)
         ids = [record['id'] for record in records]
         data = [record['fields'] for record in records]
         if len(data) == 0:
@@ -38,9 +42,9 @@ class AirtableData:
         record = data.to_dict()
         self.airtable.update(id, record)
 
-    def upsert_data(self, data: pd.DataFrame, id_field: str = 'id') -> None:
+    def upsert_data(self, data: pd.DataFrame, id_field: str = 'id', date_type: str='None') -> None:
         for _, row in data.iterrows():
-            airtable_record = self.get_data_by_field(id_field, row[id_field])
+            airtable_record = self.get_data_by_field(id_field, row[id_field], date_type)
             if airtable_record.empty:
                 self.insert_data(row)
             else:
